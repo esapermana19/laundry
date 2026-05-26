@@ -11,6 +11,7 @@
     <title>@yield('page-title')</title>
 
     <meta name="description" content="" />
+    <script src="https://cdn.tailwindcss.com"></script>
 
     @include('layouts.styles')
     <!-- Helpers -->

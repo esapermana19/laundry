@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\TransactionController;
 use App\Http\Middleware\cekRole;
 use Illuminate\Support\Facades\Route;
 
@@ -32,5 +33,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/customers/edit/{id}', [CustomerController::class, 'edit'])->name('customers.edit');
         Route::put('/customers/update/{id}', [CustomerController::class, 'update'])->name('customers.update');
         Route::delete('/customers/destroy/{id}', [CustomerController::class, 'destroy'])->name('customers.destroy');
+
+        // Transactions
+        Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
+        Route::get('/transactions/create', [TransactionController::class, 'create'])->name('transactions.create');
+        Route::post('/transactions/store', [TransactionController::class, 'store'])->name('transactions.store');
     });
 });

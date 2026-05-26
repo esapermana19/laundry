@@ -59,14 +59,14 @@
                 <li class="menu-header small text-uppercase">
                     <span class="menu-header-text text-cyan-600">Transaksi</span>
                 </li>
-                <li class="menu-item {{ request()->is('orders') ? 'active' : '' }}">
-                    <a href="#" class="menu-link">
+                <li class="menu-item {{ request()->is('transactions/create') ? 'active' : '' }}">
+                    <a href="{{ route('transactions.create') }}" class="menu-link">
                         <i class="menu-icon ti ti-sort-descending-2"></i>
                         <div>Pesanan Baru</div>
                     </a>
                 </li>
-                <li class="menu-item {{ request()->is('orders.list') ? 'active' : '' }}">
-                    <a href="#" class="menu-link">
+                <li class="menu-item {{ request()->is('transactions') ? 'active' : '' }}">
+                    <a href="{{ route('transactions.index') }}" class="menu-link">
                         <i class="menu-icon ti ti-list"></i>
                         <div>Daftar Pesanan</div>
                     </a>
