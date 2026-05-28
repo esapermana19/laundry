@@ -9,13 +9,16 @@ use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class TransactionController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index() {
+    public function index()
+    {
         $transactions = Transaction::with('customer')->orderBy('created_at', 'desc')->get();
         return view('transactions.index', compact('transactions'));
     }
@@ -131,17 +134,89 @@ class TransactionController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Transaction $transaction)
+    public function editStatus($id)
     {
-        //
+        $transaction = Transaction::findOrFail($id);
+
+        // Kembalikan view modal tanpa layout master (karena ini dimuat di dalam modal)
+        return view('transactions.update-status', compact('transaction'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Transaction $transaction)
+    public function updateStatusSave(Request $request, $id)
     {
-        //
+        $request->validate([
+            'status' => 'required|in:received,washing,drying,ironing,ready,completed',
+            'payment_status' => 'required|in:paid,unpaid'
+        ]);
+
+        // Ambil data transaksi beserta relasi kustomernya
+        $transaction = Transaction::with('customer')->findOrFail($id);
+
+        // Simpan status lama sebelum diupdate untuk perbandingan
+        $oldStatus = $transaction->status;
+
+        // Proses update data ke database
+        $transaction->update([
+            'status' => $request->status,
+            'payment_status' => $request->payment_status
+        ]);
+
+        // Otomatisasi tanggal jika status berubah
+        if ($request->status === 'ready' && is_null($transaction->completion_date)) {
+            $transaction->update(['completion_date' => now()]);
+        }
+        if ($request->status === 'completed' && is_null($transaction->taken_date)) {
+            $transaction->update(['taken_date' => now()]);
+        }
+
+        // ====================================================================
+        // LOGIKA NOTIFIKASI WHATSAPP VIA FONNTE
+        // ====================================================================
+        // Notifikasi HANYA dikirim jika ada PERUBAHAN PROSES LAUNDRY
+        if ($oldStatus !== $request->status) {
+
+            // Ambil nomor telepon dari relasi customer
+            $phone = $transaction->customer->customer_phone;
+
+            if ($phone) {
+                // Mapping status database ke bahasa Indonesia yang ramah pelanggan
+                $statusText = [
+                    'received'  => 'telah KAMI TERIMA dan masuk dalam antrean.',
+                    'washing'   => 'sedang dalam proses PENCUCIAN.',
+                    'drying'    => 'sedang dalam proses PENGERINGAN.',
+                    'ironing'   => 'sedang dalam proses SETRIKA (Finishing).',
+                    'ready'     => 'sudah SELESAI & SIAP DIAMBIL. Silakan datangi outlet Jacusa.',
+                    'completed' => 'telah DIAMBIL. Terima kasih banyak telah mempercayai layanan kami!'
+                ];
+
+                $namaCust = $transaction->customer->customer_name;
+                $noInvoice = $transaction->invoice_number;
+                $teksProses = $statusText[$request->status];
+
+                // Susun template pesan (Gunakan *teks* untuk cetak tebal di WhatsApp)
+                $pesan = "Halo *{$namaCust}*,\n\nNotifikasi dari *Jacusa Laundry*. Cucian Anda dengan No. Invoice *{$noInvoice}* saat ini *{$teksProses}*\n\nSalam hangat,\n*Jacusa Laundry*";
+
+                // Kirim Request ke API Fonnte menggunakan try-catch agar aplikasi tidak crash jika WA gagal
+                try {
+                    Http::withHeaders([
+                        'Authorization' => env('FONNTE_TOKEN') // Mengambil token dari file .env
+                    ])->post('https://api.fonnte.com/send', [
+                        'target' => $phone,
+                        'message' => $pesan,
+                        'countryCode' => '62', // Memastikan format nomor lokal otomatis dikonversi ke internasional
+                    ]);
+                } catch (\Exception $e) {
+                    // Jika jaringan putus atau API down, error dilewati agar kasir tetap bisa bekerja
+                    Log::error('Fonnte Error: ' . $e->getMessage());
+                }
+            }
+        }
+        // ====================================================================
+
+        return redirect()->route('transactions.index')->with('success', 'Status Transaksi & Pembayaran berhasil diperbarui!');
     }
 
     /**
@@ -150,5 +225,20 @@ class TransactionController extends Controller
     public function destroy(Transaction $transaction)
     {
         //
+    }
+
+    public function print($id)
+    {
+        // Mengambil transaksi beserta kustomer dan detail item laundry-nya
+        $transaction = Transaction::with(['customer', 'service'])->findOrFail($id);
+
+        // Mengambil item yang ada di dalam detail_transactions untuk nota
+        $details = DB::table('detail_transactions')
+            ->join('services', 'detail_transactions.service_id', '=', 'services.id')
+            ->where('transaction_id', $id)
+            ->select('detail_transactions.*', 'services.service_name', 'services.unit')
+            ->get();
+
+        return view('transactions.print', compact('transaction', 'details'));
     }
 }

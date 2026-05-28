@@ -86,7 +86,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
                 <div class="flex flex-col">
                     <span class="text-lg font-extrabold tracking-wider text-gray-800 leading-none">
-                        KLIN<span class="text-brand">WASH</span>
+                        JACUSA<span class="text-brand">LAUNDRY</span>
                     </span>
                     <span class="text-[8px] text-gray-400 tracking-widest uppercase font-bold mt-1">
                         Laundry Services
@@ -96,9 +96,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <!-- Formulir Utama -->
             <div class="my-auto max-w-[360px] w-full pt-8 pb-6 md:py-0">
-                <h1 class="text-3xl font-extrabold text-gray-800 tracking-tight mb-2">
-                    KlinWash System
-                </h1>
+                {{-- <h1 class="text-3xl font-extrabold text-gray-800 tracking-tight mb-2">
+                    Jasa Cuci Esa Laundry System
+                </h1> --}}
                 <p class="text-gray-400 text-sm mb-8 font-medium">
                     Selamat Datang Kembali, silakan masuk ke akun Anda
                 </p>
@@ -122,7 +122,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             type="text"
                             id="email"
                             name="email"
-                            placeholder="username@klinwash.com"
+                            placeholder="username@jacusa.com"
                             required
                             class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all placeholder:text-gray-300 text-gray-700 text-sm font-medium"
                         />
@@ -193,7 +193,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <!-- Nama Brand Putih Berukuran Besar dengan Bayangan -->
             <h2 class="text-4xl font-extrabold text-white tracking-widest drop-shadow-[0_4px_8px_rgba(0,0,0,0.3)]">
-                KlinWash
+                Jacusa
             </h2>
             <p class="text-xs text-white/90 font-bold uppercase tracking-widest mt-1.5 drop-shadow">
                 Laundry Services
