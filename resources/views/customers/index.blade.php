@@ -5,30 +5,26 @@
     {{-- Filter Data Pelanggan --}}
     <div class="card">
         <div class="card-body">
-            <form action="/services" method="GET">
+            <form action="/customers" method="GET">
                 <div class="row">
-                    <div class="col-6">
+                    <div class="col-md-9 col-12">
                         <div class="input-group input-group-merge">
                             <span class="input-group-text"><i class="ti ti-search"></i></span>
-                            <input type="text" name="service_name" class="form-control" placeholder="Service Name"
-                                value="{{ Request('service_name') }}" aria-label="Search..."
+                            <input type="text" name="customer_name" class="form-control" placeholder="Customer Name"
+                                value="{{ Request('customer_name') }}" aria-label="Search..."
                                 aria-describedby="basic-addon-search31">
                         </div>
                     </div>
-                    <div class="col-4">
-                        <select id="category_id" name="category_id" class="form-select">
-                            <option value="">Semua Kategori</option>
-                            {{-- @foreach ($categories as $c)
-                                <option value="{{ $c->id }}"
-                                    {{ Request('category_id') == $c->id ? 'selected' : '' }}>
-                                    {{ $c->category_name }}</option>
-                            @endforeach --}}
-                        </select>
-                    </div>
-                    <div class="col-2">
-                        <button type="submit" class="btn btn-info">
-                            <i class="ti ti-search"></i> Search
-                        </button>
+                    <div class="col-md-3 col-12">
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-info w-100 px-2">
+                                <i class="ti ti-search"></i> Search
+                            </button>
+                            <button type="button" class="btn btn-secondary w-100 px-2"
+                                onclick="window.location='/customers'">
+                                <i class="ti ti-refresh"></i> Reset
+                            </button>
+                        </div>
                     </div>
                 </div>
             </form>
@@ -38,7 +34,7 @@
     <div class="card mt-3">
         <div class="card-body">
             <a href="#" id="btnTambahData" class="btn btn-primary">Tambah Data</a>
-            <table class="table">
+            <table class="table mb-2">
                 <thead>
                     <tr>
                         <th>Kode Customer</th>
@@ -68,6 +64,7 @@
                     @endforeach
                 </tbody>
             </table>
+            {{ $customers->links() }}
         </div>
     </div>
     {{-- Modal Form Tambah/Edit Pelanggan --}}

@@ -15,9 +15,9 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'proseslogout'])->name('proseslogout');
-    Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
-
     Route::middleware(cekRole::class . ':admin')->group(function () {
+        // Dashboard
+        Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
         // Services
         Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
         Route::get('/services/create', [ServiceController::class, 'create'])->name('services.create');

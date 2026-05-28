@@ -17,9 +17,36 @@ class TransactionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $transactions = Transaction::with('customer')->orderBy('created_at', 'desc')->get();
+        // 1. Inisialisasi query dasar beserta relasi customer
+        $query = Transaction::with('customer');
+
+        // 2. Filter berdasarkan Nama Customer (Mencari lewat relasi tabel)
+        if ($request->filled('customer_name')) {
+            $query->whereHas('customer', function ($q) use ($request) {
+                $q->where('customer_name', 'like', '%' . $request->customer_name . '%');
+            });
+        }
+
+        // 3. Filter berdasarkan Tanggal Transaksi
+        if ($request->filled('transaction_date')) {
+            $query->whereDate('transaction_date', $request->transaction_date);
+        }
+
+        // 4. Filter berdasarkan Status Pembayaran
+        if ($request->filled('payment_status')) {
+            $query->where('payment_status', $request->payment_status);
+        }
+
+        // 5. Filter berdasarkan Status Proses Laundry Order
+        if ($request->filled('order_status')) {
+            $query->where('status', $request->order_status);
+        }
+
+        // 6. Urutkan dari yang paling baru dan ambil datanya
+        $transactions = $query->orderBy('created_at', 'desc')->paginate(4);
+
         return view('transactions.index', compact('transactions'));
     }
 

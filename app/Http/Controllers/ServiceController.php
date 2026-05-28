@@ -10,9 +10,16 @@ class ServiceController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $service = Service::all();
+        $query = Service::query();
+        if($request->service_name) {
+            $query->where('service_name', 'like', '%' . $request->service_name . '%');
+        }
+        if($request->unit) {
+            $query->where('unit', $request->unit);
+        }
+        $service = $query->paginate(4);
         return view('services.index', compact('service'));
     }
 

@@ -1,12 +1,81 @@
-@extends('layouts.vuexy');
+@extends('layouts.vuexy')
 @section('page-title', 'Sales')
 @section('content')
     <div class="card">
         <div class="card-body">
-            <a href="{{ route('transactions.create') }}" id="btnTambahData" class="btn btn-primary btn-sm mb-3">Tambah Data</a>
+            <form action="/transactions" method="GET">
+                <div class="row">
+                    <div class="col-md-5 col-12">
+                        <div class="input-group input-group-merge">
+                            <span class="input-group-text"><i class="ti ti-search"></i></span>
+                            <input type="text" name="customer_name" class="form-control" placeholder="Customer Name"
+                                value="{{ Request('customer_name') }}" aria-label="Search..."
+                                aria-describedby="basic-addon-search31">
+                        </div>
+                    </div>
+                    <div class="col-md-5 col-12">
+                        <div class="input-group input-group-merge">
+                            <span class="input-group-text"><i class="ti ti-calendar"></i></span>
+                            <input type="date" name="transaction_date" class="form-control"
+                                value="{{ Request('transaction_date') }}" aria-label="Search..."
+                                aria-describedby="basic-addon-search31">
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-12">
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-info w-100 px-2">
+                                <i class="ti ti-search"></i> Search
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    {{-- filter status --}}
+                    <div class="col-md-5 col-12">
+                        <select name="payment_status" class="form-select">
+                            <option value="">Filter Status Bayar</option>
+                            <option value="unpaid" {{ Request('payment_status') == 'unpaid' ? 'selected' : '' }}>Belum Lunas
+                            </option>
+                            <option value="paid" {{ Request('payment_status') == 'paid' ? 'selected' : '' }}>Lunas</option>
+                        </select>
+                    </div>
+                    {{-- filter status --}}
+                    <div class="col-md-5 col-12">
+                        <select name="order_status" class="form-select">
+                            <option value="">Filter Status Order</option>
+                            <option value="received" {{ Request('order_status') == 'received' ? 'selected' : '' }}>
+                                Received</option>
+                            <option value="washing" {{ Request('order_status') == 'washing' ? 'selected' : '' }}>
+                                Washing</option>
+                            <option value="drying" {{ Request('order_status') == 'drying' ? 'selected' : '' }}>
+                                Drying</option>
+                            <option value="ironing" {{ Request('order_status') == 'ironing' ? 'selected' : '' }}>
+                                Ironing</option>
+                            <option value="ready" {{ Request('order_status') == 'ready' ? 'selected' : '' }}>Ready
+                            </option>
+                            <option value="completed" {{ Request('order_status') == 'completed' ? 'selected' : '' }}>
+                                Completed</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 col-12">
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-secondary w-100 px-2"
+                                onclick="window.location='/transactions'">
+                                <i class="ti ti-refresh"></i> Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="card mt-3">
+        <div class="card-body">
+            <a href="{{ route('transactions.create') }}" id="btnTambahData" class="btn btn-primary btn-sm mb-3">Tambah
+                Data</a>
 
             <div class="table-responsive text-nowrap">
-                <table class="table table-hover table-sm mb-3" style="font-size: 13px;">
+                <table class="table table-hover table-sm mb-3" style="font-size: 13px; mb-3">
                     <thead>
                         <tr class="text-uppercase" style="font-size: 11px;">
                             <th>No.</th>
@@ -55,7 +124,8 @@
                                             'ready' => 'bg-green-400 text-green-800',
                                             'completed' => 'bg-gray-400 text-gray-800',
                                         ];
-                                        $colorClass = $statusColors[$transaction->status] ?? 'bg-slate-400 text-slate-800';
+                                        $colorClass =
+                                            $statusColors[$transaction->status] ?? 'bg-slate-400 text-slate-800';
                                     @endphp
                                     <span class="badge {{ $colorClass }}"
                                         style="font-size: 11px; padding: 4px 8px; text-transform: capitalize;">
@@ -69,9 +139,8 @@
                                     </a>
                                 </td>
                                 <td>
-                                    <a href="#"
-                                        class="orderStatus font-semibold"
-                                        data-id="{{ $transaction->id }}"><i class="ti ti-edit"></i></a>
+                                    <a href="#" class="orderStatus font-semibold" data-id="{{ $transaction->id }}"><i
+                                            class="ti ti-edit"></i></a>
                                 </td>
                             </tr>
                         @empty
@@ -83,6 +152,7 @@
                         @endforelse
                     </tbody>
                 </table>
+                {{ $transactions->links() }}
             </div>
         </div>
     </div>

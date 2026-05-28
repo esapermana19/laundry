@@ -5,29 +5,36 @@
     <div class="card">
         <div class="card-body">
             <form action="/services" method="GET">
-                <div class="row">
-                    <div class="col-6">
+                <div class="row g-3 align-items-center">
+                    {{-- Input Search Name --}}
+                    <div class="col-md-6 col-12">
                         <div class="input-group input-group-merge">
                             <span class="input-group-text"><i class="ti ti-search"></i></span>
                             <input type="text" name="service_name" class="form-control" placeholder="Service Name"
-                                value="{{ Request('service_name') }}" aria-label="Search..."
-                                aria-describedby="basic-addon-search31">
+                                value="{{ Request('service_name') }}" aria-label="Search...">
                         </div>
                     </div>
-                    <div class="col-4">
-                        <select id="category_id" name="category_id" class="form-select">
-                            <option value="">Semua Kategori</option>
-                            {{-- @foreach ($categories as $c)
-                                <option value="{{ $c->id }}"
-                                    {{ Request('category_id') == $c->id ? 'selected' : '' }}>
-                                    {{ $c->category_name }}</option>
-                            @endforeach --}}
+
+                    {{-- Select Satuan --}}
+                    <div class="col-md-3 col-12">
+                        <select id="unit" name="unit" class="form-select">
+                            <option value="">Pilih Satuan</option>
+                            <option value="Kg" {{ Request('unit') == 'Kg' ? 'selected' : '' }}>Kg</option>
+                            <option value="Pcs" {{ Request('unit') == 'Pcs' ? 'selected' : '' }}>Pcs</option>
                         </select>
                     </div>
-                    <div class="col-2">
-                        <button type="submit" class="btn btn-info">
-                            <i class="ti ti-search"></i> Search
-                        </button>
+
+                    {{-- Group Tombol Action (Search & Reset) --}}
+                    <div class="col-md-3 col-12">
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-info w-100 px-2">
+                                <i class="ti ti-search"></i> Search
+                            </button>
+                            <button type="button" class="btn btn-secondary w-100 px-2"
+                                onclick="window.location='/services'">
+                                <i class="ti ti-refresh"></i> Reset
+                            </button>
+                        </div>
                     </div>
                 </div>
             </form>
@@ -37,7 +44,7 @@
     <div class="card mt-3">
         <div class="card-body">
             <a href="#" id="btnTambahData" class="btn btn-primary">Tambah Data</a>
-            <table class="table">
+            <table class="table mb-2">
                 <thead>
                     <tr>
                         <th>Kode Layanan</th>
@@ -58,9 +65,8 @@
                             <td>{{ $s->price_per_unit }}</td>
                             <td>
                                 <a href="#" class="btn btn-sm btn-info btnEdit" data-id="{{ $s->id }}">Edit</a>
-                                <form
-                                    action="{{ route('services.destroy', $s->id) }}"
-                                    method="POST" class="d-inline formDelete">
+                                <form action="{{ route('services.destroy', $s->id) }}" method="POST"
+                                    class="d-inline formDelete">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
@@ -70,6 +76,7 @@
                     @endforeach
                 </tbody>
             </table>
+            {{ $service->links() }}
         </div>
     </div>
     {{-- Modal Form Tambah/Edit Layanan --}}
