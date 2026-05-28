@@ -36,7 +36,13 @@ class CustomerController extends Controller
             'customer_address' => 'required',
         ]);
 
-        Customer::create($request->all());
+        $customer = Customer::create($request->all());
+        if ($request->ajax()) {
+        return response()->json([
+            'status' => 'success',
+            'data'   => $customer
+        ]);
+    }
         return redirect()->route('customers.index')->with('success', 'Customer berhasil ditambahkan.');
     }
 

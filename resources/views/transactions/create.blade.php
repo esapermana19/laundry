@@ -32,7 +32,7 @@
                                     </option>
                                 @endforeach
                             </select>
-                            <button type="button"
+                            <button type="button" id="addCustomer"
                                 class="px-3 py-2 bg-slate-100 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-200 text-sm transition"
                                 title="Tambah Pelanggan Baru">
                                 <i class="fa-solid fa-user-plus"></i>
@@ -168,8 +168,32 @@
         </form>
     </div>
 
+    {{-- Modal Tambah Pelanggan --}}
+    <div class="modal fade" id="customerModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel1">Modal title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="loadForm">
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
 
+@push('myscript')
     <script>
+        // Tampil Modal Tambah Pelanggan Baru
+        $(function() {
+            $('#addCustomer').on('click', function() {
+                $('#customerModal').modal('show');
+                $('.modal-title').text('Tambah Pelanggan Baru');
+                $('#loadForm').load("{{ route('customers.create') }}");
+            });
+        });
+
         // 1. Variabel Global
         let currentService = {
             id: null,
@@ -325,5 +349,74 @@
                 document.getElementById('summary-payment').innerText = "Bayar di Awal";
             }
         }
+        $(document).on('submit', '#form-customer-ajax', function(e) {
+            e.preventDefault(); // Mencegah form melakukan refresh halaman
+
+            let form = $(this);
+            let url = form.attr('action');
+
+            // Ubah tombol submit jadi loading biar UX lebih mantap
+            let submitBtn = form.find('button[type="submit"]');
+            let originalText = submitBtn.text();
+            submitBtn.text('Menyimpan...').prop('disabled', true);
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: form.serialize(), // Mengambil semua inputan (nama, telp, csrf)
+                success: function(response) {
+                    if (response.status === 'success') {
+                        // 1. Tutup modal
+                        $('#customerModal').modal('hide');
+
+                        // 2. Buat elemen Option baru untuk dropdown
+                        let newCustomer = response.data;
+
+                        // Gunakan fallback || jika nama property object di DB Anda bervariasi
+                        let customerName = newCustomer.customer_name || newCustomer.nama_customer;
+                        let customerPhone = newCustomer.customer_phone || newCustomer.no_tlp;
+
+                        let optionText = customerName + ' (' + customerPhone + ')';
+                        let newOption = new Option(optionText, newCustomer.id, true, true);
+
+                        // Set atribut data agar fungsi updateSummary() kita tetap jalan
+                        newOption.setAttribute('data-name', customerName);
+                        newOption.setAttribute('data-phone', customerPhone);
+
+                        // 3. Masukkan ke select dropdown dan trigger perubahan
+                        $('#pos-customer').append(newOption).trigger('change');
+
+                        // 4. Update ringkasan sebelah kanan
+                        updateSummary();
+
+                        // 5. Tampilkan SweetAlert Sukses
+                        Swal.fire({
+                            title: 'Berhasil!',
+                            text: 'Pelanggan Berhasil Ditambahkan.',
+                            icon: 'success',
+                            customClass: {
+                                confirmButton: 'btn btn-primary'
+                            },
+                            buttonsStyling: false
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    // TAMPILKAN SWEETALERT2 BERWARNA MERAH JIKA VALIDASI GAGAL ATAU SYSTEM ERROR
+                    Swal.fire({
+                        title: 'Gagal Menyimpan!',
+                        text: 'Terjadi kesalahan. Pastikan seluruh form input terisi dengan benar.',
+                        icon: 'error',
+                        customClass: {
+                            confirmButton: 'btn btn-danger'
+                        },
+                        buttonsStyling: false
+                    });
+
+                    // Kembalikan tombol ke status semula
+                    submitBtn.text(originalText).prop('disabled', false);
+                }
+            });
+        });
     </script>
-@endsection
+@endpush
