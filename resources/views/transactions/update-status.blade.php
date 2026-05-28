@@ -1,4 +1,4 @@
-<form action="/transactions/update-status-save/{{ $transaction->id }}" method="POST">
+<form action="/transactions/update-status-save/{{ $transaction->id }}" method="POST" id="form-edit">
     @csrf
     @method('PUT')
 
@@ -72,7 +72,7 @@
 
     <div class="mt-3 text-end">
         <button type="button" class="btn btn-sm btn-label-secondary me-2" data-bs-dismiss="modal">Batal</button>
-        <button type="submit" class="btn btn-sm btn-primary"><i class="ti ti-device-floppy me-1"></i> Simpan</button>
+        <button type="button" onclick="btnConfirm()" class="btn btn-sm btn-primary"><i class="ti ti-device-floppy me-1"></i> Simpan</button>
     </div>
 </form>
 
@@ -168,4 +168,21 @@
             disableCard('card-unpaid');
         }
     }, 100);
+
+    function btnConfirm() {
+        Swal.fire({
+            title: 'Apakah Anda yakin?',
+                    text: "Data Transaksi akan diperbarui!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, ubah!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Jika ditekan "Ya", form disubmit secara terprogram
+                document.getElementById('form-edit').submit();
+            }
+        });
+    }
 </script>

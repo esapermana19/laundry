@@ -1,4 +1,4 @@
-<form action="{{ route('services.update', $service->id) }}" method="POST">
+<form action="{{ route('services.update', $service->id) }}" method="POST" id="form-edit">
     @csrf
     @method('PUT')
     <div class="card-body">
@@ -45,7 +45,25 @@
                 <input type="number" class="form-control" name="price_per_unit" value="{{$service->price_per_unit}}" placeholder="0">
             </div>
         </div>
-        <button type="submit" class="btn btn-primary waves-effect waves-light">Simpan</button>
+        <button type="button" onclick="btnConfirm()" class="btn btn-primary waves-effect waves-light">Simpan</button>
         <button type="button" class="btn btn-danger waves-effect waves-light" data-bs-dismiss="modal">Batal</button>
     </div>
 </form>
+<script>
+    function btnConfirm() {
+        Swal.fire({
+            title: 'Apakah Anda yakin?',
+                    text: "Data Layanan akan diubah!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, ubah!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Jika ditekan "Ya", form disubmit secara terprogram
+                document.getElementById('form-edit').submit();
+            }
+        });
+    }
+</script>

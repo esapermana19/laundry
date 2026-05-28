@@ -36,7 +36,8 @@
                             <option value="">Filter Status Bayar</option>
                             <option value="unpaid" {{ Request('payment_status') == 'unpaid' ? 'selected' : '' }}>Belum Lunas
                             </option>
-                            <option value="paid" {{ Request('payment_status') == 'paid' ? 'selected' : '' }}>Lunas</option>
+                            <option value="paid" {{ Request('payment_status') == 'paid' ? 'selected' : '' }}>Lunas
+                            </option>
                         </select>
                     </div>
                     {{-- filter status --}}
@@ -152,8 +153,8 @@
                         @endforelse
                     </tbody>
                 </table>
-                {{ $transactions->links() }}
             </div>
+            {{ $transactions->links() }}
         </div>
     </div>
     {{-- modal update status --}}
