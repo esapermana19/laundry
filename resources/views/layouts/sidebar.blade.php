@@ -71,6 +71,15 @@
                         <div>Daftar Pesanan</div>
                     </a>
                 </li>
+                <li class="menu-header small text-uppercase">
+                    <span class="menu-header-text text-cyan-600">Laporan</span>
+                </li>
+                <li class="menu-item {{ request()->is('transactions/report*') ? 'active' : '' }}">
+                    <a href="{{ route('transactions.report') }}" class="menu-link">
+                        <i class="menu-icon ti ti-report-analytics"></i>
+                        <div>Laporan</div>
+                    </a>
+                </li>
                 {{-- <li
                     class="menu-item {{ request()->is(['products', 'customers', 'suppliers', 'categories']) ? 'active open' : '' }}">
                     <a href="javascript:void(0);" class="menu-link menu-toggle">
